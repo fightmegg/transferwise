@@ -28,6 +28,7 @@ class TransferWise {
       }
     };
     if (body) fetchOptions.body = JSON.stringify(body);
+    if (method === "DELETE") return fetch(url, fetchOptions);
     return fetch(url, fetchOptions).then(resp => resp.json());
   }
 
