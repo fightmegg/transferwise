@@ -4,6 +4,8 @@
 
 `npm install @fightmegg/transferwise`
 
+**NB: Requires Node >= 12**
+
 ## Usage
 
 ```js
