@@ -29,7 +29,7 @@ aliases:
 
   - &publish-to-npm
     name: Publish to NPM Package Registry
-    command: npm publish dist --tag $PKG_TAG
+    command: npm publish dist --tag $PKG_TAG --access public
 
 # Defaults
 defaults: &defaults
