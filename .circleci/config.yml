@@ -40,7 +40,7 @@ js_defaults: &js_defaults
   docker:
     - image: circleci/node:12.11.1-stretch
 
-obs:
+jobs:
   # Checkout Env + Deps
   prepare_environment:
     <<: *js_defaults
