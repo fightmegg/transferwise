@@ -1,0 +1,43 @@
+{
+  "name": "@fightmegg/transferwise",
+  "version": "1.0.0",
+  "description": "Node TransferWise API client",
+  "main": "index.js",
+  "module": "index.esm.js",
+  "sideEffects": false,
+  "scripts": {
+    "test": "jest",
+    "version": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fightmegg/transferwise.git"
+  },
+  "keywords": [
+    "transferwise"
+  ],
+  "author": "Ollie Jennings <ollie@fightme.gg>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fightmegg/transferwise/issues"
+  },
+  "homepage": "https://github.com/fightmegg/transferwise#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/node": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "@types/jest": "^24.0.23",
+    "babel-jest": "^24.9.0",
+    "core-js": "^3.4.1",
+    "dotenv": "^8.2.0",
+    "jest": "^24.9.0",
+    "jest-extended": "^0.11.2",
+    "jest-junit": "^9.0.0",
+    "rollup": "^1.27.1",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-node-resolve": "^5.2.0"
+  }
+}
