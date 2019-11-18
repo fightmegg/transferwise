@@ -1,0 +1,34 @@
+{
+  "name": "@fightmegg/transferwise",
+  "version": "1.0.0",
+  "description": "> An open-source TransferWise API client for Node.JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "babel-node -r dotenv/config ./tw.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fightmegg/transferwise.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fightmegg/transferwise/issues"
+  },
+  "homepage": "https://github.com/fightmegg/transferwise#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/node": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "@types/jest": "^24.0.23",
+    "babel-jest": "^24.9.0",
+    "core-js": "^3.4.1",
+    "dotenv": "^8.2.0",
+    "jest": "^24.9.0"
+  }
+}
