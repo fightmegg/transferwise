@@ -13,9 +13,9 @@ aliases:
       - node_modules
 
   - &authenticate-registry
-    name: Authenticate with NPM Package Registry
+    name: Authenticate with Github Package Registry
     command: |
-      echo "//registry.npmjs.org/:_authToken=${NPM_REGISTRY_TOKEN}" > ~/node-transferwise/.npmrc
+      echo "//npm.pkg.github.com/:_authToken=${GITHUB_REGISTRY_TOKEN}" > ~/node-transferwise/.npmrc
       echo "git-tag-version=false" >> ~/node-transferwise/.npmrc
 
   - &update-pkg-version
@@ -27,8 +27,8 @@ aliases:
       cp LICENSE ./dist
       cp README.md ./dist
 
-  - &publish-to-npm
-    name: Publish to NPM Package Registry
+  - &publish-to-github
+    name: Publish to Github Package Registry
     command: npm publish dist --tag $PKG_TAG --access public
 
 # Defaults
@@ -78,7 +78,7 @@ jobs:
       - attach_workspace:
           at: ~/node-transferwise
       - run: *update-pkg-version
-      - deploy: *publish-to-npm
+      - deploy: *publish-to-github
 
   publish_beta:
     <<: *js_defaults
@@ -88,7 +88,7 @@ jobs:
       - attach_workspace:
           at: ~/node-transferwise
       - run: *update-pkg-version
-      - deploy: *publish-to-npm
+      - deploy: *publish-to-github
 
   publish_prod:
     <<: *js_defaults
@@ -98,7 +98,7 @@ jobs:
       - attach_workspace:
           at: ~/node-transferwise
       - run: *update-pkg-version
-      - deploy: *publish-to-npm
+      - deploy: *publish-to-github
 
 workflows:
   test-publish:

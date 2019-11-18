@@ -22,6 +22,9 @@
     "url": "https://github.com/fightmegg/transferwise/issues"
   },
   "homepage": "https://github.com/fightmegg/transferwise#readme",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "dependencies": {
     "node-fetch": "^2.6.0"
   },
