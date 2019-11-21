@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import { encode } from "querystring";
+import { constructEvent } from "./webhooks";
 
 const SANDBOX_URL = "https://api.sandbox.transferwise.tech";
 const LIVE_URL = "https://api.transferwise.com";
@@ -119,6 +120,13 @@ class TransferWise {
             path: `/simulation/transfers/${transferId}/funds_refunded`
           })
       }
+    };
+  }
+
+  get webhooks() {
+    return {
+      constructEvent: (body, signature) =>
+        constructEvent(this.sandbox, body, signature)
     };
   }
 }

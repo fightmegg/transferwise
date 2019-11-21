@@ -12,10 +12,16 @@ aliases:
     paths:
       - node_modules
 
-  - &authenticate-registry
+  - &authenticate-github-registry
     name: Authenticate with Github Package Registry
     command: |
       echo "//npm.pkg.github.com/:_authToken=${GITHUB_REGISTRY_TOKEN}" > ~/node-transferwise/.npmrc
+      echo "git-tag-version=false" >> ~/node-transferwise/.npmrc
+
+  - &authenticate-npm-registry
+    name: Authenticate with NPM Package Registry
+    command: |
+      echo "//registry.npmjs.org/:_authToken=${NPM_REGISTRY_TOKEN}" > ~/node-transferwise/.npmrc
       echo "git-tag-version=false" >> ~/node-transferwise/.npmrc
 
   - &update-pkg-version
@@ -29,7 +35,11 @@ aliases:
 
   - &publish-to-github
     name: Publish to Github Package Registry
-    command: npm publish dist --tag $PKG_TAG --access public
+    command: npm publish dist --tag $PKG_TAG --access public --registry https://npm.pkg.github.com
+
+  - &publish-to-npm
+    name: Publish to NPM Package Registry
+    command: npm publish dist --tag $PKG_TAG --access public --registry https://registry.npmjs.org
 
 # Defaults
 defaults: &defaults
@@ -47,7 +57,6 @@ jobs:
     steps:
       - checkout
       - restore_cache: *restore-npm-cache
-      - run: *authenticate-registry
       - run:
           name: Installing dependencies
           command: npm install
@@ -78,7 +87,10 @@ jobs:
       - attach_workspace:
           at: ~/node-transferwise
       - run: *update-pkg-version
+      - run: *authenticate-github-registry
       - deploy: *publish-to-github
+      - run: *authenticate-npm-registry
+      - deploy: *publish-to-npm
 
   publish_beta:
     <<: *js_defaults
@@ -88,7 +100,10 @@ jobs:
       - attach_workspace:
           at: ~/node-transferwise
       - run: *update-pkg-version
+      - run: *authenticate-github-registry
       - deploy: *publish-to-github
+      - run: *authenticate-npm-registry
+      - deploy: *publish-to-npm
 
   publish_prod:
     <<: *js_defaults
@@ -98,7 +113,10 @@ jobs:
       - attach_workspace:
           at: ~/node-transferwise
       - run: *update-pkg-version
+      - run: *authenticate-github-registry
       - deploy: *publish-to-github
+      - run: *authenticate-npm-registry
+      - deploy: *publish-to-npm
 
 workflows:
   test-publish:

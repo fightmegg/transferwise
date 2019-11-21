@@ -1,7 +1,13 @@
 import fetch from "node-fetch";
 import TransferWise from "../index";
+import { constructEvent } from "../webhooks";
 
 jest.mock("node-fetch", () => jest.fn());
+
+jest.mock("../webhooks", () => ({
+  __esModule: true,
+  constructEvent: jest.fn()
+}));
 
 describe("TransferWise", () => {
   beforeEach(() => {
@@ -211,6 +217,32 @@ describe("TransferWise", () => {
         tw.request = jest.fn();
         tw.simulation.transfers[fn](input);
         expect(tw.request).toHaveBeenCalledWith(params);
+      });
+    });
+  });
+
+  describe("webhooks", () => {
+    describe("constructEvent", () => {
+      test("constructEvent calls constructEvent with (sandbox=true, payload, signature)", () => {
+        const tw = new TransferWise({ token: "1234", sandbox: true });
+        tw.webhooks.constructEvent("payload", "signature");
+        expect(constructEvent).toHaveBeenCalledTimes(1);
+        expect(constructEvent).toHaveBeenCalledWith(
+          true,
+          "payload",
+          "signature"
+        );
+      });
+
+      test("constructEvent calls constructEvent with (sandbox=true, payload, signature)", () => {
+        const tw = new TransferWise({ token: "1234", sandbox: false });
+        tw.webhooks.constructEvent("payload", "signature");
+        expect(constructEvent).toHaveBeenCalledTimes(1);
+        expect(constructEvent).toHaveBeenCalledWith(
+          false,
+          "payload",
+          "signature"
+        );
       });
     });
   });

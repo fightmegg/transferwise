@@ -70,3 +70,9 @@ tw.simulation.transfers.outgoingPaymentSent("<transferId>");
 tw.simulation.transfers.bouncedBack("<transferId>");
 tw.simulation.transfers.fundsRefunded("<transferId>");
 ```
+
+**webhooks**
+
+```js
+tw.webhooks.constructEvent("<webhookMsg>", "<signature>");
+```
