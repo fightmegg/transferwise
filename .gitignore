@@ -62,3 +62,6 @@ typings/
 
 # builds
 dist/
+
+# test report
+*.xml
