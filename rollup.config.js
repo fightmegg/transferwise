@@ -1,33 +1,27 @@
-import resolve from "rollup-plugin-node-resolve";
 import babel from "rollup-plugin-babel";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import { terser } from "rollup-plugin-terser";
 
-export default [
-  {
-    input: "index.js",
-    external: ["node-fetch", "querystring"],
-    output: {
+export default {
+  input: "index.js",
+  external: ["crypto", "node-fetch", "querystring"],
+  output: [
+    {
       file: "dist/index.js",
-      format: "cjs"
+      format: "cjs",
+      exports: "default",
     },
-    plugins: [
-      resolve(),
-      babel({
-        exclude: "node_modules/**" // only transpile our source code
-      })
-    ]
-  },
-  {
-    input: "index.js",
-    external: ["node-fetch", "querystring"],
-    output: {
+    {
       file: "dist/index.esm.js",
-      format: "esm"
+      format: "esm",
+      exports: "default",
     },
-    plugins: [
-      resolve(),
-      babel({
-        exclude: "node_modules/**" // only transpile our source code
-      })
-    ]
-  }
-];
+  ],
+  plugins: [
+    nodeResolve(),
+    babel({
+      exclude: /node_modules/,
+    }),
+    terser(),
+  ],
+};
