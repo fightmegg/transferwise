@@ -50,7 +50,7 @@ defaults: &defaults
 js_defaults: &js_defaults
   <<: *defaults
   docker:
-    - image: circleci/node:14.6.0-stretch
+    - image: circleci/node:14.5.0-stretch
 
 jobs:
   # Checkout Env + Deps
