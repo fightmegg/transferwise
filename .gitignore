@@ -65,3 +65,6 @@ dist/
 
 # test report
 *.xml
+
+# Jest
+.jest/

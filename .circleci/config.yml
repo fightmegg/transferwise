@@ -17,12 +17,14 @@ aliases:
     command: |
       echo "//npm.pkg.github.com/:_authToken=${GITHUB_REGISTRY_TOKEN}" > ~/node-transferwise/.npmrc
       echo "git-tag-version=false" >> ~/node-transferwise/.npmrc
+      echo "allow-same-version=true" >> ~/node-transferwise/.npmrc
 
   - &authenticate-npm-registry
     name: Authenticate with NPM Package Registry
     command: |
       echo "//registry.npmjs.org/:_authToken=${NPM_REGISTRY_TOKEN}" > ~/node-transferwise/.npmrc
       echo "git-tag-version=false" >> ~/node-transferwise/.npmrc
+      echo "allow-same-version=true" >> ~/node-transferwise/.npmrc
 
   - &update-pkg-version
     name: Updating Package Version
@@ -48,7 +50,7 @@ defaults: &defaults
 js_defaults: &js_defaults
   <<: *defaults
   docker:
-    - image: circleci/node:12.11.1-stretch
+    - image: circleci/node:14.5.0-stretch
 
 jobs:
   # Checkout Env + Deps
@@ -72,43 +74,24 @@ jobs:
           at: ~/node-transferwise
       - run:
           name: Running Unit Tests
-          command: npm test -- --ci --runInBand --reporters=default --reporters=jest-junit
+          command: npm test -- --ci --runInBand --reporters=default --reporters=jest-junit --coverage
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./test-results/jest
             JEST_JUNIT_OUTPUT_NAME: results.xml
       - store_test_results:
           path: test-results
-
-  publish_alpha:
+      - store_artifacts:
+          path: test-results
+      - store_artifacts:
+          path: .jest/coverage
+  publish:
     <<: *js_defaults
+    parameters:
+      PKG_TAG:
+        type: string
     environment:
-      PKG_TAG: dev
-    steps:
-      - attach_workspace:
-          at: ~/node-transferwise
-      - run: *update-pkg-version
-      - run: *authenticate-github-registry
-      - deploy: *publish-to-github
-      - run: *authenticate-npm-registry
-      - deploy: *publish-to-npm
-
-  publish_beta:
-    <<: *js_defaults
-    environment:
-      PKG_TAG: beta
-    steps:
-      - attach_workspace:
-          at: ~/node-transferwise
-      - run: *update-pkg-version
-      - run: *authenticate-github-registry
-      - deploy: *publish-to-github
-      - run: *authenticate-npm-registry
-      - deploy: *publish-to-npm
-
-  publish_prod:
-    <<: *js_defaults
-    environment:
-      PKG_TAG: latest
+      PKG_TAG: << parameters.PKG_TAG >>
+      NODE_ENV: production
     steps:
       - attach_workspace:
           at: ~/node-transferwise
@@ -131,7 +114,9 @@ workflows:
           filters: # all branches + tags
             tags:
               only: /.*/
-      - publish_alpha:
+      - publish:
+          name: publish-alpha
+          PKG_TAG: dev
           requires:
             - tests
           filters: # run for alpha tags only
@@ -139,7 +124,9 @@ workflows:
               ignore: /.*/
             tags:
               only: /^\d+\.\d+\.\d+-alpha\.\d+$/
-      - publish_beta:
+      - publish:
+          name: publish-beta
+          PKG_TAG: beta
           requires:
             - tests
           filters: # run for beta tags only
@@ -147,7 +134,9 @@ workflows:
               ignore: /.*/
             tags:
               only: /^\d+\.\d+\.\d+-beta\.\d+$/
-      - publish_prod:
+      - publish:
+          name: publish-prod
+          PKG_TAG: latest
           requires:
             - tests
           filters: # run for prod tags only
