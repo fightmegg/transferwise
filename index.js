@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import crypto from "crypto";
-import { encode } from "querystring";
+const encode = params => new URLSearchParams(params).toString();
 import { constructEvent } from "./webhooks";
 
 const SANDBOX_URL = "https://api.sandbox.transferwise.tech";
