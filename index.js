@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
-import { encode } from "querystring";
+import crypto from "crypto";
+const encode = params => new URLSearchParams(params).toString();
 import { constructEvent } from "./webhooks";
 
 const SANDBOX_URL = "https://api.sandbox.transferwise.tech";
@@ -8,12 +9,13 @@ const LIVE_URL = "https://api.transferwise.com";
 const VERSION = "v1";
 
 class TransferWise {
-  constructor({ token, sandbox = false } = {}) {
+  constructor({ token, privateKey = false, sandbox = false } = {}) {
     if (!token) throw new Error("token is required");
 
     this.token = token;
     this.sandbox = sandbox;
     this.url = sandbox ? SANDBOX_URL : LIVE_URL;
+    this.privateKey = privateKey
   }
 
   request({ method = "GET", path = "", body, version } = {}) {
@@ -29,8 +31,29 @@ class TransferWise {
       }
     };
     if (body) fetchOptions.body = JSON.stringify(body);
-    if (method === "DELETE") return fetch(url, fetchOptions);
-    return fetch(url, fetchOptions).then(resp => resp.json());
+
+    const scaRequestHandler = resp => {
+      if (resp.status !== 403) return resp;
+      if (resp.headers.get('X-2FA-Approval-Result') !== 'REJECTED') return resp;
+
+      if (this.privateKey === false) {
+        throw new Error("private key is required to access SCA-protected endpoints");
+      }
+
+      const oneTimeToken = resp.headers.get('X-2FA-Approval');
+      const signedOTT = this.constructor.utils.signOTT(this.privateKey, oneTimeToken);
+      fetchOptions.headers["X-2FA-Approval"] = oneTimeToken;
+      fetchOptions.headers["X-Signature"] = signedOTT;
+      return fetch(url, fetchOptions);
+    };
+
+    const scaCapableFetch = () => fetch(url, fetchOptions).then(scaRequestHandler);
+    if (method === "DELETE") return scaCapableFetch();
+    return scaCapableFetch().then(resp => resp.json());
+  }
+
+  me() {
+    return this.request({ path: "/me" });
   }
 
   profiles() {
@@ -41,6 +64,17 @@ class TransferWise {
     return this.request({
       path: `/borderless-accounts?profileId=${profileId}`
     });
+  }
+
+  statement(profileId, accountId, currency, { intervalStart, intervalEnd }) {
+    const params = {
+      currency,
+      intervalStart: intervalStart.toISOString(),
+      intervalEnd: intervalEnd.toISOString(),
+      type: "COMPACT"
+    };
+
+    return this.request({ path: `/profiles/${profileId}/borderless-accounts/${accountId}/statement.json?${encode(params)}`, version: "v3" });
   }
 
   get recipientAccounts() {
@@ -127,6 +161,16 @@ class TransferWise {
     return {
       constructEvent: (body, signature) =>
         constructEvent(this.sandbox, body, signature)
+    };
+  }
+
+  static get utils() {
+    return {
+      signOTT(pKey, ott) {
+        const sign = crypto.createSign("RSA-SHA256");
+        sign.update(ott);
+        return sign.sign(pKey).toString("base64");
+      }
     };
   }
 }

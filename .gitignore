@@ -68,3 +68,6 @@ dist/
 
 # Jest
 .jest/
+
+# macOS
+.DS_Store

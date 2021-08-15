@@ -31,9 +31,17 @@ const tw = new TransferWise({ token: ..., sandbox: true });
 const profiles = await tw.profiles();
 ```
 
+Optionally, in order to support [SCA-protected](https://api-docs.transferwise.com/#strong-customer-authentication) endpoints, it is possible to pass a PEM-formatted private key to the constructor (`new TransferWise({ token: ..., privateKey: ... })`).
+
 ## Methods
 
 Currently only supports methods listed below. Aim to support all API methods _soon_.
+
+**me**
+
+```js
+await tw.me();
+```
 
 **profiles**
 
@@ -45,6 +53,12 @@ await tw.profiles();
 
 ```js
 await tw.borderlessAccounts("<profileId>");
+```
+
+**statement**
+
+```js
+await tw.statement("<profileId>", "<borderlessAccountId>", "<iso4217CurrencyCode>", {"<interval>"});
 ```
 
 **recipientAccounts**
