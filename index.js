@@ -52,6 +52,10 @@ class TransferWise {
     return scaCapableFetch().then(resp => resp.json());
   }
 
+  me() {
+    return this.request({ path: "/me" });
+  }
+
   profiles() {
     return this.request({ path: "/profiles" });
   }
