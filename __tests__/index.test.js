@@ -37,7 +37,13 @@ describe("TransferWise", () => {
 
   describe("request", () => {
     beforeEach(() => {
-      fetch.mockReturnValue({ then: jest.fn() });
+      fetch.mockReturnValue(
+        Promise.resolve({
+          json: () => {
+            return { };
+          },
+        })
+      );
     });
 
     test("it calls fetch with defaults", () => {
