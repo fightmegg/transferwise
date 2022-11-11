@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/fightmegg/transferwise#readme",
   "dependencies": {
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.11.4",
